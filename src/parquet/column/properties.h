@@ -21,6 +21,7 @@
 #include <memory>
 #include <string>
 
+#include "parquet_export.h"
 #include "parquet/util/input.h"
 #include "parquet/util/mem-allocator.h"
 
@@ -29,7 +30,7 @@ namespace parquet {
 static int64_t DEFAULT_BUFFER_SIZE = 0;
 static bool DEFAULT_USE_BUFFERED_STREAM = false;
 
-class ReaderProperties {
+class PARQUET_EXPORT ReaderProperties {
  public:
   explicit ReaderProperties(MemoryAllocator* allocator = default_allocator())
       : allocator_(allocator) {
@@ -67,13 +68,13 @@ class ReaderProperties {
   bool buffered_stream_enabled_;
 };
 
-ReaderProperties default_reader_properties();
+PARQUET_EXPORT ReaderProperties default_reader_properties();
 
 static int64_t DEFAULT_PAGE_SIZE = 1024 * 1024;
 static int64_t DEFAULT_DICTIONARY_PAGE_SIZE = DEFAULT_PAGE_SIZE;
 static bool DEFAULT_IS_DICTIONARY_ENABLED = true;
 
-class WriterProperties {
+class PARQUET_EXPORT WriterProperties {
  public:
   explicit WriterProperties(MemoryAllocator* allocator = default_allocator())
       : allocator_(allocator) {
@@ -107,7 +108,7 @@ class WriterProperties {
   MemoryAllocator* allocator_;
 };
 
-WriterProperties default_writer_properties();
+PARQUET_EXPORT WriterProperties default_writer_properties();
 
 }  // namespace parquet
 

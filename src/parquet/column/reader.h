@@ -24,6 +24,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "parquet_export.h"
 #include "parquet/column/levels.h"
 #include "parquet/column/page.h"
 #include "parquet/encodings/decoder.h"
@@ -34,7 +35,7 @@
 
 namespace parquet {
 
-class ColumnReader {
+class PARQUET_EXPORT ColumnReader {
  public:
   ColumnReader(const ColumnDescriptor*, std::unique_ptr<PageReader>,
       MemoryAllocator* allocator = default_allocator());

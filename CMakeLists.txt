@@ -390,6 +390,11 @@ if (${CLANG_TIDY_FOUND})
 
 endif()
 
+include(GenerateExportHeader)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
+
 #############################################################
 # Test linking
 
@@ -463,18 +468,24 @@ set(LIBPARQUET_LINK_LIBS
   parquet_compression
   parquet_thrift
   parquet_util
-  thriftstatic
 )
-
-add_library(parquet_objlib OBJECT
-  ${LIBPARQUET_LINKAGE}
-  ${LIBPARQUET_SRCS}
-)
-
-set_property(TARGET parquet_objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 if (PARQUET_BUILD_SHARED)
-    add_library(parquet_shared SHARED $<TARGET_OBJECTS:parquet_objlib>)
+    add_library(parquet_shared SHARED
+      ${LIBPARQUET_LINKAGE}
+      ${LIBPARQUET_SRCS}
+    )
+    set_property(TARGET parquet_shared PROPERTY POSITION_INDEPENDENT_CODE 1)
+    generate_export_header(parquet_shared
+      BASE_NAME parquet
+      EXPORT_FILE_NAME shared/parquet_export.h)
+    add_compiler_export_flags(EXPORTED_FLAGS)
+    set_target_properties(parquet_shared PROPERTIES COMPILE_FLAGS "${EXPORTED_FLAGS}")
+    target_include_directories(
+      parquet_shared
+      PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/shared
+    )
+
     if(APPLE)
         set_target_properties(parquet_shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
     endif()
@@ -482,16 +493,32 @@ if (PARQUET_BUILD_SHARED)
       PROPERTIES
       LIBRARY_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}"
       OUTPUT_NAME "parquet")
-    target_link_libraries(parquet_shared ${LIBPARQUET_LINK_LIBS})
+    target_link_libraries(parquet_shared PUBLIC ${LIBPARQUET_LINK_LIBS})
+    target_link_libraries(parquet_shared PRIVATE thriftstatic)
 endif()
 
 if (PARQUET_BUILD_STATIC)
-    add_library(parquet_static STATIC $<TARGET_OBJECTS:parquet_objlib>)
+    add_library(parquet_static STATIC
+      ${LIBPARQUET_LINKAGE}
+      ${LIBPARQUET_SRCS}
+    )
+    set_property(TARGET parquet_static PROPERTY POSITION_INDEPENDENT_CODE 1)
+    generate_export_header(parquet_static
+      BASE_NAME parquet
+      EXPORT_FILE_NAME static/parquet_export.h)
+    add_compiler_export_flags(EXPORTED_FLAGS)
+    set_target_properties(parquet_static PROPERTIES COMPILE_FLAGS "${EXPORTED_FLAGS}")
+    target_include_directories(
+      parquet_static
+      PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/static
+    )
+
     set_target_properties(parquet_static
       PROPERTIES
       LIBRARY_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}"
       OUTPUT_NAME "parquet")
-    target_link_libraries(parquet_static ${LIBPARQUET_LINK_LIBS})
+    target_link_libraries(parquet_static PUBLIC ${LIBPARQUET_LINK_LIBS})
+    target_link_libraries(parquet_shared PRIVATE thriftstatic)
 endif()
 
 add_subdirectory(src/parquet)
@@ -503,10 +530,6 @@ add_subdirectory(src/parquet/file)
 add_subdirectory(src/parquet/schema)
 add_subdirectory(src/parquet/thrift)
 add_subdirectory(src/parquet/util)
-
-# Ensure that thrift compilation is done befor using its generated headers
-# in parquet code.
-add_dependencies(parquet_objlib parquet_thrift)
 
 add_subdirectory(example)
 
