@@ -195,7 +195,7 @@ class DictEncoder : public Encoder<DType> {
   int bit_width() const {
     if (UNLIKELY(num_entries() == 0)) return 0;
     if (UNLIKELY(num_entries() == 1)) return 1;
-    return BitUtil::Log2(num_entries());
+    return BitUtil::Log2(num_entries() + 1);
   }
 
   /// Writes out any buffered indices to buffer preceded by the bit width of this data.
