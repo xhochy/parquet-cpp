@@ -373,7 +373,7 @@ inline bool RleEncoder::Put(uint64_t value) {
   }
 
   buffered_values_[num_buffered_values_] = value;
-  if (++num_buffered_values_ == 8) {
+  if (++num_buffered_values_ == MAX_VALUES_PER_LITERAL_RUN) {
     DCHECK_EQ(literal_count_ % 8, 0);
     FlushBufferedValues(false);
   }
