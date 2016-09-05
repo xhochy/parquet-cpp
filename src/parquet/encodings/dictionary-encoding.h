@@ -435,10 +435,31 @@ inline int DictEncoder<DType>::WriteIndices(uint8_t* buffer, int buffer_len) {
   ++buffer;
   --buffer_len;
 
+  int i = 0;
+  std::cout << "RLE encoding " << buffered_indices_.size() << " indices" << std::endl;
   RleEncoder encoder(buffer, buffer_len, bit_width());
   for (int index : buffered_indices_) {
-    if (!encoder.Put(index)) return -1;
+    // std::cout << buffered_indices_[i];
+    if (!encoder.Put(index)) {
+      std::cout << std::endl;
+      std::cout << buffered_indices_[i - 10] << std::endl;
+      std::cout << buffered_indices_[i - 9] << std::endl;
+      std::cout << buffered_indices_[i - 8] << std::endl;
+      std::cout << buffered_indices_[i - 7] << std::endl;
+      std::cout << buffered_indices_[i - 6] << std::endl;
+      std::cout << buffered_indices_[i - 5] << std::endl;
+      std::cout << buffered_indices_[i - 4] << std::endl;
+      std::cout << buffered_indices_[i - 3] << std::endl;
+      std::cout << buffered_indices_[i - 2] << std::endl;
+      std::cout << buffered_indices_[i - 1] << std::endl;
+      std::cout << buffered_indices_[i] << std::endl;
+      std::cout << "Failed at index " << i << std::endl;
+      std::cout << "bit_width = " << bit_width() << std::endl;
+      return -1;
+    }
+    i++;
   }
+  std::cout << std::endl;
   encoder.Flush();
 
   ClearIndices();

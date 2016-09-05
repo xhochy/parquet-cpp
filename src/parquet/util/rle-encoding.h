@@ -171,15 +171,21 @@ class RleEncoder {
 
   /// Returns the maximum byte size it could take to encode 'num_values'.
   static int MaxBufferSize(int bit_width, int num_values) {
-    int bytes_per_run = BitUtil::Ceil(bit_width * MAX_VALUES_PER_LITERAL_RUN, 8.0);
-    int num_runs = BitUtil::Ceil(num_values, MAX_VALUES_PER_LITERAL_RUN);
+    // 8 values per smallest run, 8 bits per byte
+    int bytes_per_run = BitUtil::Ceil(bit_width * 8, 8);
+    int num_runs = BitUtil::Ceil(num_values, 8);
     int literal_max_size = num_runs + num_runs * bytes_per_run;
+    std::cout << "Expected literal size: " << (int)(1 + bytes_per_run) << std::endl;
+    std::cout << "Expected runs: " << num_runs << std::endl;
+    std::cout << "Overall literal expectations: " << literal_max_size << std::endl;
 
     // In the very worst case scenario, the data is a concatenation of repeated
     // runs of 8 values. Repeated run has a 1 byte varint followed by the
     // bit-packed repeated value
+    // int min_repeated_run_size = BitReader::MAX_VLQ_BYTE_LEN + BitUtil::Ceil(bit_width, 8);
     int min_repeated_run_size = 1 + BitUtil::Ceil(bit_width, 8);
     int repeated_max_size = BitUtil::Ceil(num_values, 8) * min_repeated_run_size;
+    std::cout << "Expected repeated size: " << min_repeated_run_size << std::endl;
 
     return std::max(literal_max_size, repeated_max_size);
   }
@@ -406,6 +412,7 @@ inline void RleEncoder::FlushLiteralRun(bool update_indicator_byte) {
     // We only reserve one byte, to allow for streaming writes of literal values.
     // The logic makes sure we flush literal runs often enough to not overrun
     // the 1 byte.
+    std::cout << "Literal run of length: " << literal_count_ << " at " << bit_writer_.bytes_written() << std::endl;
     DCHECK_EQ(literal_count_ % 8, 0);
     int num_groups = literal_count_ / 8;
     int32_t indicator_value = (num_groups << 1) | 1;
@@ -421,9 +428,11 @@ inline void RleEncoder::FlushRepeatedRun() {
   DCHECK_GT(repeat_count_, 0);
   bool result = true;
   // The lsb of 0 indicates this is a repeated run
+  std::cout << "Start Repeated run of length: " << repeat_count_ << " at " << bit_writer_.bytes_written() << std::endl;
   int32_t indicator_value = repeat_count_ << 1 | 0;
   result &= bit_writer_.PutVlqInt(indicator_value);
   result &= bit_writer_.PutAligned(current_value_, BitUtil::Ceil(bit_width_, 8));
+  std::cout << "End Repeated run of length: " << repeat_count_ << " at " << bit_writer_.bytes_written() << std::endl;
   DCHECK(result);
   num_buffered_values_ = 0;
   repeat_count_ = 0;
@@ -492,6 +501,7 @@ inline int RleEncoder::Flush() {
 inline void RleEncoder::CheckBufferFull() {
   int bytes_written = bit_writer_.bytes_written();
   if (bytes_written + max_run_byte_size_ > bit_writer_.buffer_len()) {
+    std::cout << std::endl << "Buffer full " << bytes_written << " + " << max_run_byte_size_ << " > " << bit_writer_.buffer_len() << std::endl;
     buffer_full_ = true;
   }
 }

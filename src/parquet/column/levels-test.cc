@@ -185,22 +185,75 @@ TEST(TestLevels, TestLevelsDecodeMultipleSetData) {
 
 TEST(TestLevelEncoder, MinimumBufferSize) {
   // PARQUET-676, PARQUET-698
-  const int kNumToEncode = 1024;
+  const int kNumToEncode = 1023;
 
   std::vector<int16_t> levels;
   for (int i = 0; i < kNumToEncode; ++i) {
-    if (i % 9 == 0) {
-      levels.push_back(0);
-    } else {
+    if ((i % 16) < 7) {
       levels.push_back(1);
+    } else {
+      levels.push_back(0);
     }
   }
 
   std::vector<uint8_t> output(
-      LevelEncoder::MaxBufferSize(Encoding::RLE, 1, kNumToEncode));
+      LevelEncoder::MaxBufferSize(Encoding::RLE, 2, kNumToEncode));
 
   LevelEncoder encoder;
-  encoder.Init(Encoding::RLE, 1, kNumToEncode, output.data(), output.size());
+  encoder.Init(Encoding::RLE, 2, kNumToEncode, output.data(), output.size());
+  int encode_count = encoder.Encode(kNumToEncode, levels.data());
+
+  ASSERT_EQ(kNumToEncode, encode_count);
+}
+
+TEST(TestLevelEncoder, MinimumBufferSize2) {
+  // PARQUET-676, PARQUET-698
+  const int kNumToEncode = 1021;
+
+  std::vector<int16_t> levels;
+  for (int i = 0; i < kNumToEncode; ++i) {
+    levels.push_back(i % 3);
+  }
+
+  std::vector<uint8_t> output(
+      LevelEncoder::MaxBufferSize(Encoding::RLE, 2, kNumToEncode));
+
+  LevelEncoder encoder;
+  encoder.Init(Encoding::RLE, 2, kNumToEncode, output.data(), output.size());
+  int encode_count = encoder.Encode(kNumToEncode, levels.data());
+
+  ASSERT_EQ(kNumToEncode, encode_count);
+}
+
+TEST(TestLevelEncoder, MinimumBufferSize3) {
+  // PARQUET-676, PARQUET-698
+  const int kNumToEncode = 17;
+
+  std::vector<int16_t> levels;
+  levels.push_back(0);
+  levels.push_back(1);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(0);
+  levels.push_back(1);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(2);
+  levels.push_back(1);
+
+  std::vector<uint8_t> output(
+      LevelEncoder::MaxBufferSize(Encoding::RLE, 2, kNumToEncode));
+
+  LevelEncoder encoder;
+  encoder.Init(Encoding::RLE, 2, kNumToEncode, output.data(), output.size());
   int encode_count = encoder.Encode(kNumToEncode, levels.data());
 
   ASSERT_EQ(kNumToEncode, encode_count);
