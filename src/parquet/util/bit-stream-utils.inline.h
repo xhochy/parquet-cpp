@@ -81,7 +81,6 @@ inline bool BitWriter::PutAligned(T val, int num_bytes) {
 inline bool BitWriter::PutVlqInt(uint32_t v) {
   bool result = true;
   while ((v & 0xFFFFFF80) != 0L) {
-    std::cout << "More than one int" << std::endl;
     result &= PutAligned<uint8_t>((v & 0x7F) | 0x80, 1);
     v >>= 7;
   }
