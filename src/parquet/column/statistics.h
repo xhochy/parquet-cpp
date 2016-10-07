@@ -179,6 +179,15 @@ using DoubleStatistics = TypedRowGroupStatistics<DoubleType>;
 using ByteArrayStatistics = TypedRowGroupStatistics<ByteArrayType>;
 using FLBAStatistics = TypedRowGroupStatistics<FLBAType>;
 
+extern template class PARQUET_EXPORT TypedRowGroupStatistics<BooleanType>;
+extern template class PARQUET_EXPORT TypedRowGroupStatistics<Int32Type>;
+extern template class PARQUET_EXPORT TypedRowGroupStatistics<Int64Type>;
+extern template class PARQUET_EXPORT TypedRowGroupStatistics<Int96Type>;
+extern template class PARQUET_EXPORT TypedRowGroupStatistics<FloatType>;
+extern template class PARQUET_EXPORT TypedRowGroupStatistics<DoubleType>;
+extern template class PARQUET_EXPORT TypedRowGroupStatistics<ByteArrayType>;
+extern template class PARQUET_EXPORT TypedRowGroupStatistics<FLBAType>;
+
 }  // namespace parquet
 
 #endif  // PARQUET_COLUMN_STATISTICS_H

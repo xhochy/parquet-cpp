@@ -79,28 +79,33 @@ void TypedRowGroupStatistics<DType>::Reset() {
 }
 
 template <typename DType>
-void TypedRowGroupStatistics<DType>::Copy(const T& src, T* dst, OwnedMutableBuffer&) {
+void CopyInternal(const typename DType::c_type& src, typename DType::c_type* dst, OwnedMutableBuffer&, uint32_t) {
   *dst = src;
 }
 
 template <>
-void TypedRowGroupStatistics<FLBAType>::Copy(
-    const FLBA& src, FLBA* dst, OwnedMutableBuffer& buffer) {
+void CopyInternal<FLBAType>(
+    const FLBA& src, FLBA* dst, OwnedMutableBuffer& buffer, uint32_t type_length) {
   if (dst->ptr == src.ptr) return;
-  uint32_t len = descr_->type_length();
-  buffer.Resize(len);
-  std::memcpy(&buffer[0], src.ptr, len);
+  buffer.Resize(type_length);
+  std::memcpy(&buffer[0], src.ptr, type_length);
   *dst = FLBA(buffer.data());
 }
 
 template <>
-void TypedRowGroupStatistics<ByteArrayType>::Copy(
-    const ByteArray& src, ByteArray* dst, OwnedMutableBuffer& buffer) {
+void CopyInternal<ByteArrayType>(
+    const ByteArray& src, ByteArray* dst, OwnedMutableBuffer& buffer, uint32_t) {
   if (dst->ptr == src.ptr) return;
   buffer.Resize(src.len);
   std::memcpy(&buffer[0], src.ptr, src.len);
   *dst = ByteArray(src.len, buffer.data());
 }
+
+template <typename DType>
+void TypedRowGroupStatistics<DType>::Copy(const T& src, T* dst, OwnedMutableBuffer& buffer) {
+  CopyInternal<DType>(src, dst, buffer, descr_->type_length());
+}
+
 
 template <typename DType>
 void TypedRowGroupStatistics<DType>::Update(
