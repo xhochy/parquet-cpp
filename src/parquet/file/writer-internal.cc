@@ -260,6 +260,7 @@ FileSerializer::FileSerializer(std::shared_ptr<OutputStream> sink,
   std::cout << (intptr_t)sink_.get() << std::endl;
   schema_.Init(schema);
   metadata_ = FileMetaDataBuilder::Make(&schema_, properties);
+  sink->Write(PARQUET_MAGIC, 4);
   StartFile();
 }
 
@@ -267,7 +268,6 @@ void FileSerializer::StartFile() {
   // Parquet files always start with PAR1
   auto sink = sink_.get();
   std::cout << (intptr_t)sink << std::endl;
-  sink->Write(PARQUET_MAGIC, 4);
 }
 
 }  // namespace parquet
