@@ -261,7 +261,7 @@ FileSerializer::FileSerializer(std::shared_ptr<OutputStream> sink,
   schema_.Init(schema);
   metadata_ = FileMetaDataBuilder::Make(&schema_, properties);
   sink->Write(PARQUET_MAGIC, 4);
-  StartFile();
+  // StartFile();
 }
 
 void FileSerializer::StartFile() {
