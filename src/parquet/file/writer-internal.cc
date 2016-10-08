@@ -256,6 +256,8 @@ FileSerializer::FileSerializer(std::shared_ptr<OutputStream> sink,
       properties_(properties),
       num_row_groups_(0),
       num_rows_(0) {
+  std::cout << (intptr_t)sink.get() << std::endl;
+  std::cout << (intptr_t)sink_.get() << std::endl;
   schema_.Init(schema);
   metadata_ = FileMetaDataBuilder::Make(&schema_, properties);
   StartFile();
