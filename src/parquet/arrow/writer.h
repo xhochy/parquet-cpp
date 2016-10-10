@@ -58,7 +58,7 @@ class PARQUET_EXPORT FileWriter {
 
  private:
   class PARQUET_NO_EXPORT Impl;
-  std::unique_ptr<Impl> impl_;
+  std::shared_ptr<Impl> impl_;
 };
 
 /**
