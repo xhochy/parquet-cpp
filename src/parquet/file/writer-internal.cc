@@ -248,7 +248,7 @@ void FileSerializer::WriteMetaData() {
   sink_->Write(PARQUET_MAGIC, 4);
 }
 
-FileSerializer::FileSerializer(std::shared_ptr<OutputStream> sink,
+FileSerializer::FileSerializer(const std::shared_ptr<OutputStream>& sink,
     const std::shared_ptr<GroupNode>& schema,
     const std::shared_ptr<WriterProperties>& properties)
     : sink_(sink),

@@ -119,7 +119,7 @@ class FileSerializer : public ParquetFileWriter::Contents {
   virtual ~FileSerializer();
 
  private:
-  explicit FileSerializer(std::shared_ptr<OutputStream> sink,
+  explicit FileSerializer(const std::shared_ptr<OutputStream>& sink,
       const std::shared_ptr<schema::GroupNode>& schema,
       const std::shared_ptr<WriterProperties>& properties);
 
