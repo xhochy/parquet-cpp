@@ -181,10 +181,10 @@ void RowGroupSerializer::Close() {
 // ----------------------------------------------------------------------
 // FileSerializer
 
-std::unique_ptr<ParquetFileWriter::Contents> FileSerializer::Open(
+std::shared_ptr<ParquetFileWriter::Contents> FileSerializer::Open(
     std::shared_ptr<OutputStream> sink, const std::shared_ptr<GroupNode>& schema,
     const std::shared_ptr<WriterProperties>& properties) {
-  std::unique_ptr<ParquetFileWriter::Contents> result(
+  std::shared_ptr<ParquetFileWriter::Contents> result(
       new FileSerializer(sink, schema, properties));
 
   return result;

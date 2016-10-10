@@ -102,7 +102,7 @@ class PARQUET_EXPORT ParquetFileWriter {
       const std::shared_ptr<schema::GroupNode>& schema,
       const std::shared_ptr<WriterProperties>& properties = default_writer_properties());
 
-  void Open(std::unique_ptr<Contents> contents);
+  void Open(std::shared_ptr<Contents> contents);
   void Close();
 
   /**
@@ -152,7 +152,7 @@ class PARQUET_EXPORT ParquetFileWriter {
 
  private:
   // Holds a pointer to an instance of Contents implementation
-  std::unique_ptr<Contents> contents_;
+  std::shared_ptr<Contents> contents_;
 };
 
 }  // namespace parquet

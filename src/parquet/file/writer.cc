@@ -56,7 +56,7 @@ std::shared_ptr<ParquetFileWriter> ParquetFileWriter::Open(
   auto contents = FileSerializer::Open(sink, schema, properties);
 
   std::shared_ptr<ParquetFileWriter> result(new ParquetFileWriter());
-  result->Open(std::move(contents));
+  result->Open(contents);
 
   return result;
 }
@@ -69,8 +69,8 @@ const ColumnDescriptor* ParquetFileWriter::descr(int i) const {
   return contents_->schema()->Column(i);
 }
 
-void ParquetFileWriter::Open(std::unique_ptr<ParquetFileWriter::Contents> contents) {
-  contents_ = std::move(contents);
+void ParquetFileWriter::Open(std::shared_ptr<ParquetFileWriter::Contents> contents) {
+  contents_ = contents;
 }
 
 void ParquetFileWriter::Close() {
