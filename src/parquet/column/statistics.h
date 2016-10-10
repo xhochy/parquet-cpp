@@ -37,6 +37,8 @@ class PARQUET_EXPORT EncodedStatistics {
   EncodedStatistics()
       : max_(std::make_shared<std::string>()), min_(std::make_shared<std::string>()) {}
 
+  virtual ~EncodedStatistics();
+
   const std::string& max() const { return *max_; }
   const std::string& min() const { return *min_; }
 

@@ -27,6 +27,8 @@
 
 namespace parquet {
 
+EncodedStatistics::~EncodedStatistics() {}
+
 template <typename DType>
 TypedRowGroupStatistics<DType>::TypedRowGroupStatistics(
     const ColumnDescriptor* schema, MemoryAllocator* allocator)
