@@ -191,7 +191,7 @@ class TestParquetIO : public ::testing::Test {
     return std::static_pointer_cast<GroupNode>(node_);
   }
 
-  std::unique_ptr<ParquetFileWriter> MakeWriter(
+  std::shared_ptr<ParquetFileWriter> MakeWriter(
       const std::shared_ptr<GroupNode>& schema) {
     sink_ = std::make_shared<InMemoryOutputStream>();
     return ParquetFileWriter::Open(sink_, schema);
@@ -426,7 +426,7 @@ class TestPrimitiveParquetIO : public TestParquetIO<TestType> {
   void MakeTestFile(std::vector<T>& values, int num_chunks,
       std::unique_ptr<ParquetFileReader>* file_reader) {
     std::shared_ptr<GroupNode> schema = this->MakeSchema(Repetition::REQUIRED);
-    std::unique_ptr<ParquetFileWriter> file_writer = this->MakeWriter(schema);
+    std::shared_ptr<ParquetFileWriter> file_writer = this->MakeWriter(schema);
     size_t chunk_size = values.size() / num_chunks;
     // Convert to Parquet's expected physical type
     std::vector<uint8_t> values_buffer(
