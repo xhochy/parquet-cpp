@@ -45,7 +45,7 @@ namespace arrow {
  */
 class PARQUET_EXPORT FileWriter {
  public:
-  FileWriter(::arrow::MemoryPool* pool, std::unique_ptr<ParquetFileWriter> writer);
+  FileWriter(::arrow::MemoryPool* pool, const std::shared_ptr<ParquetFileWriter>& writer);
 
   ::arrow::Status NewRowGroup(int64_t chunk_size);
   ::arrow::Status WriteFlatColumnChunk(

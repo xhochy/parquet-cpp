@@ -47,7 +47,7 @@ namespace arrow {
 
 class FileWriter::Impl {
  public:
-  Impl(MemoryPool* pool, std::unique_ptr<ParquetFileWriter> writer);
+  Impl(MemoryPool* pool, const std::shared_ptr<ParquetFileWriter>& writer);
 
   Status NewRowGroup(int64_t chunk_size);
   template <typename ParquetType, typename ArrowType>
@@ -96,14 +96,14 @@ class FileWriter::Impl {
   // as expected by parquet-cpp.
   PoolBuffer data_buffer_;
   PoolBuffer def_levels_buffer_;
-  std::unique_ptr<ParquetFileWriter> writer_;
+  std::shared_ptr<ParquetFileWriter> writer_;
   RowGroupWriter* row_group_writer_;
 };
 
-FileWriter::Impl::Impl(MemoryPool* pool, std::unique_ptr<ParquetFileWriter> writer)
+FileWriter::Impl::Impl(MemoryPool* pool, const std::shared_ptr<ParquetFileWriter>& writer)
     : pool_(pool),
       data_buffer_(pool),
-      writer_(std::move(writer)),
+      writer_(writer),
       row_group_writer_(nullptr) {
           std::cout << "Test" << std::endl;
       }
@@ -299,8 +299,8 @@ Status FileWriter::Impl::WriteFlatColumnChunk(
   return Status::OK();
 }
 
-FileWriter::FileWriter(MemoryPool* pool, std::unique_ptr<ParquetFileWriter> writer)
-    : impl_(new FileWriter::Impl(pool, std::move(writer))) {}
+FileWriter::FileWriter(MemoryPool* pool, const std::shared_ptr<ParquetFileWriter>& writer)
+    : impl_(new FileWriter::Impl(pool, writer)) {}
 
 Status FileWriter::NewRowGroup(int64_t chunk_size) {
   return impl_->NewRowGroup(chunk_size);
@@ -341,9 +341,9 @@ Status WriteFlatTable(const Table* table, MemoryPool* pool,
       ToParquetSchema(table->schema().get(), *properties.get(), &parquet_schema));
   auto schema_node = std::static_pointer_cast<GroupNode>(parquet_schema->schema_root());
   std::cout << "WriteFlatTable " << (intptr_t)sink.get() << std::endl;
-  std::unique_ptr<ParquetFileWriter> parquet_writer =
+  std::shared_ptr<ParquetFileWriter> parquet_writer =
       ParquetFileWriter::Open(sink, schema_node, properties);
-  FileWriter writer(pool, std::move(parquet_writer));
+  FileWriter writer(pool, parquet_writer);
 
   // TODO(ARROW-232) Support writing chunked arrays.
   for (int i = 0; i < table->num_columns(); i++) {
