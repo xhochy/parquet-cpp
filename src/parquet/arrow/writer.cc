@@ -104,7 +104,9 @@ FileWriter::Impl::Impl(MemoryPool* pool, std::unique_ptr<ParquetFileWriter> writ
     : pool_(pool),
       data_buffer_(pool),
       writer_(std::move(writer)),
-      row_group_writer_(nullptr) {}
+      row_group_writer_(nullptr) {
+          std::cout << "Test" << std::endl;
+      }
 
 Status FileWriter::Impl::NewRowGroup(int64_t chunk_size) {
   if (row_group_writer_ != nullptr) { PARQUET_CATCH_NOT_OK(row_group_writer_->Close()); }
