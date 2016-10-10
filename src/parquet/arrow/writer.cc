@@ -353,6 +353,7 @@ Status WriteFlatTable(const Table* table, MemoryPool* pool,
   for (int chunk = 0; chunk * chunk_size < table->num_rows(); chunk++) {
     int64_t offset = chunk * chunk_size;
     int64_t size = std::min(chunk_size, table->num_rows() - offset);
+    std::cout << "WriteFlatTable " << (intptr_t)sink.get() << std::endl;
     RETURN_NOT_OK_ELSE(writer.NewRowGroup(size), PARQUET_IGNORE_NOT_OK(writer.Close()));
     for (int i = 0; i < table->num_columns(); i++) {
       std::shared_ptr<::arrow::Array> array = table->column(i)->data()->chunk(0);
