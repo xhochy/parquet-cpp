@@ -49,8 +49,7 @@ const auto TIMESTAMP_MS =
     std::make_shared<::arrow::TimestampType>(::arrow::TimestampType::Unit::MILLI);
 // TODO: This requires parquet-cpp implementing the MICROS enum value
 // const auto TIMESTAMP_US = std::make_shared<TimestampType>(TimestampType::Unit::MICRO);
-const auto BINARY =
-    std::make_shared<::arrow::ListType>(std::make_shared<Field>("", UINT8));
+const auto BINARY = std::make_shared<::arrow::BinaryType>();
 const auto DECIMAL_8_4 = std::make_shared<::arrow::DecimalType>(8, 4);
 
 class TestConvertParquetSchema : public ::testing::Test {

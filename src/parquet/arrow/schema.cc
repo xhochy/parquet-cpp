@@ -58,8 +58,7 @@ const auto DOUBLE = std::make_shared<::arrow::DoubleType>();
 const auto UTF8 = std::make_shared<::arrow::StringType>();
 const auto TIMESTAMP_MS =
     std::make_shared<::arrow::TimestampType>(::arrow::TimestampType::Unit::MILLI);
-const auto BINARY =
-    std::make_shared<::arrow::ListType>(std::make_shared<::arrow::Field>("", UINT8));
+const auto BINARY = std::make_shared<::arrow::BinaryType>();
 
 TypePtr MakeDecimalType(const PrimitiveNode* node) {
   int precision = node->decimal_metadata().precision;
