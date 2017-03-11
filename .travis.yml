@@ -43,6 +43,7 @@ matrix:
   - compiler: clang
     os: linux
   - os: osx
+    osx_image: xcode6.4
     compiler: clang
     addons:
     before_install:
