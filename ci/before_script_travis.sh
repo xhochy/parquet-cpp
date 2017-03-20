@@ -23,6 +23,24 @@ fi
 
 export PARQUET_TEST_DATA=$TRAVIS_BUILD_DIR/data
 
+source $TRAVIS_BUILD_DIR/ci/travis_install_conda.sh
+
+export PARQUET_HOME=$TRAVIS_BUILD_DIR/parquet-env
+conda create -y -q -p $PARQUET_HOME python=3.5
+source activate $PARQUET_HOME
+
+# In case some package wants to download the MKL
+conda install -y -q nomkl
+
+conda install openssl
+# conda install -y -q thrift-cpp snappy zlib brotli boost
+
+# export BOOST_ROOT=$PARQUET_HOME
+# export SNAPPY_HOME=$PARQUET_HOME
+# export THRIFT_HOME=$PARQUET_HOME
+# export ZLIB_HOME=$PARQUET_HOME
+# export BROTLI_HOME=$PARQUET_HOME
+
 if [ $TRAVIS_OS_NAME == "linux" ]; then
     cmake -DPARQUET_CXXFLAGS=-Werror \
           -DPARQUET_TEST_MEMCHECK=ON \
